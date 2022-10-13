@@ -1,0 +1,33 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "devStart": "cross-env NODE_ENV=development nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schudu/backend.git"
+  },
+  "author": "Konnesky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schudu/backend/issues"
+  },
+  "homepage": "https://new.schudu.com",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "joi": "^17.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.6.4",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20"
+  }
+}
