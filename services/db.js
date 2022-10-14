@@ -5,6 +5,7 @@ module.exports = async function connection() {
     const connectionOptions = {
       useNewUrlParser: true,
     };
+    console.log(process.env.SCHUDU_DB);
 
     if (process.env.NODE_ENV === "development")
       await mongoose.connect(
