@@ -25,6 +25,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.get("/whoami", checkAuthenticated, async (req, res) => {
   res.send(req.user);
 });

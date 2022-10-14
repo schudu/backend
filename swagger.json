@@ -1,0 +1,275 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Schudu API 1.0.0",
+    "description": "Schudu is an Online Platform to easily manage the homeworks, dates, material and quizzes for students and teachers. [New Schudu](https://new.schudu.com) and [Old Schudu](https://schudu.com)",
+    "termsOfService": "http://swagger.io/terms/",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.schudu.com/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "user",
+      "description": "Everything about and with the user Account"
+    }
+  ],
+  "paths": {
+    "/whoami": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get the current User",
+        "description": "Sends all Data about the User currently logged in.",
+        "operationId": "whoami",
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unautherized (Not Logged in)"
+          },
+          "500": {
+            "description": "Internal Server Error (Something went wrong)"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Login the User in",
+        "description": "Will return an Authtoken which you will need to send in every request in the Cookie Header",
+        "operationId": "login",
+        "requestBody": {
+          "description": "In the App the Remember property should be set to true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login-Req"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login. Sends a Token in the Cookie Header."
+          },
+          "400": {
+            "description": "Wrong request structure"
+          },
+          "401": {
+            "description": "Unautherized, Login not successful"
+          },
+          "415": {
+            "description": "Wrong Variable Type"
+          },
+          "500": {
+            "description": "Internal Server Error (Something went wrong)"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Register a new User",
+        "description": "This will be the same for students and teachers",
+        "operationId": "register",
+        "requestBody": {
+          "description": "Let the Password confirm",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register-Req"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Register. Makes a temporary token and email verification."
+          },
+          "400": {
+            "description": "Wrong request structure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Register-Res-error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unautherized, Register not successful"
+          },
+          "409": {
+            "description": "Username or Email already used",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Register-Res-error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Wrong Variable Type"
+          },
+          "500": {
+            "description": "Internal Server Error (Something went wrong)"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "985469879vn59v9"
+          },
+          "username": {
+            "type": "string",
+            "example": "svolec19"
+          },
+          "firstname": {
+            "type": "string",
+            "example": "Leon"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "Svoboda"
+          },
+          "email": {
+            "type": "string",
+            "example": "svolec19@htl-kaindorf.at"
+          },
+          "password": {
+            "type": "string",
+            "example": "kuergkneriugnieirninsneirngiusniunsibhoaieriiehb"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "example": true
+          },
+          "type": {
+            "type": "string",
+            "example": "student",
+            "enum": [
+              "student",
+              "teacher",
+              "futureteacher"
+            ]
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-09-05T06:43:28.214Z"
+          },
+          "lastActive": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-10-14T06:43:28.214Zä"
+          }
+        },
+        "xml": {
+          "name": "user"
+        }
+      },
+      "Login-Req": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "format": "email/string",
+            "example": "SvoLec19 (email/username)"
+          },
+          "password": {
+            "type": "string",
+            "example": "Richtiges Leon Passwort!"
+          },
+          "remember": {
+            "type": "boolean"
+          }
+        },
+        "xml": {
+          "name": "login"
+        }
+      },
+      "Register-Req": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "SvoLec19 (check if available on Change)"
+          },
+          "firstname": {
+            "type": "string",
+            "example": "Leon"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "Svoboda"
+          },
+          "email": {
+            "type": "string",
+            "example": "svolec19@pfuscher.io"
+          },
+          "password": {
+            "type": "string",
+            "example": "Richtiges Leon Passwort!"
+          },
+          "type": {
+            "type": "string",
+            "example": "student",
+            "enum": [
+              "student",
+              "teacher"
+            ]
+          }
+        },
+        "xml": {
+          "name": "login"
+        }
+      },
+      "Register-Res-error": {
+        "type": "object",
+        "properties": {
+          "where": {
+            "type": "string",
+            "example": "email"
+          },
+          "error": {
+            "type": "string",
+            "example": "used"
+          }
+        }
+      }
+    }
+  }
+}
