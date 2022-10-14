@@ -4,7 +4,7 @@ services:
     build:
       context: .
       args:
-        - SCHUDU_DB=${SCHUDU_DB}
+        - SCHUDU_DB=$halle
         - SCHUDU_EMAIL_HOST=${SCHUDU_EMAIL_HOST}
         - SCHUDU_EMAIL_USER=${SCHUDU_EMAIL_USER}
         - SCHUDU_EMAIL_PASS=${SCHUDU_EMAIL_PASS}
@@ -12,7 +12,7 @@ services:
       - "127.0.0.1:10003:3001"
     container_name: backend
     environment:
-      - SCHUDU_DB=${SCHUDU_DB}
+      - SCHUDU_DB=hallo
       - SCHUDU_EMAIL_HOST=${SCHUDU_EMAIL_HOST}
       - SCHUDU_EMAIL_USER=${SCHUDU_EMAIL_USER}
       - SCHUDU_EMAIL_PASS=${SCHUDU_EMAIL_PASS}
