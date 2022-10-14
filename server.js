@@ -189,6 +189,7 @@ cron.schedule("* 0 * * *", function () {
 });
 
 app.listen(3001, () => {
-  console.log("hallo");
+  console.log("Hallole");
+  console.log(process.env.SCHUDU_DB);
   console.log("Schudu backend running on Port: 3001");
 });
