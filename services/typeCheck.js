@@ -13,7 +13,7 @@ const TypeCheck = class {
       return { where: "password", error: "length" };
 
     if (
-      !/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).*$/.test(
+      !/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!$ %^&*-]).*$/.test(
         this.value
       )
     )

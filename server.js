@@ -97,15 +97,18 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
       type: type === "teacher" ? UserType.FUTURETEACHER : UserType.STUDENT,
     });
 
-    res.cookie(
-      "token",
-      jwt.sign({ id: user._id }, user.password, {
-        expiresIn: 60 * 60 * 24,
-      }),
-      { maxAge: 60 * 60 * 24 }
-    );
+    res
+      .cookie(
+        "token",
+        jwt.sign({ id: user._id }, user.password, {
+          expiresIn: 60 * 60 * 24,
+        }),
+        { maxAge: 60 * 60 * 24 }
+      )
+      .status(201)
+      .send();
   });
-  return res.status(201).send();
+  return res.status(500).send();
 });
 
 app.put("/resetpassword", async (req, res) => {
