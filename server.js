@@ -52,10 +52,16 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
     return res
       .cookie(
         "token",
-        jwt.sign({ id: user._id }, user.password, {
-          expiresIn: !!remember ? null : 60 * 60 * 24,
-        }),
-        { maxAge: !!remember ? null : 60 * 60 * 24 }
+        jwt.sign(
+          { id: user._id },
+          user.password,
+          !!remember
+            ? {}
+            : {
+                expiresIn: 60 * 60 * 24,
+              }
+        ),
+        !!remember ? {} : { maxAge: 60 * 60 * 24 }
       )
       .send({ emailVerified: user.emailVerified });
   }
@@ -167,13 +173,13 @@ async function checkJWT(token) {
 
     if (!authData) return false;
 
-    if (user.emailVerified) {
+    /* if (user.emailVerified) {
       user.emailVerified = (await EmailVerify.exists({
         user: mongoose.Types.ObjectId(decoded.id),
       }))
         ? false
         : true;
-    }
+    } */
 
     return user;
   } catch (err) {
