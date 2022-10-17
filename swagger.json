@@ -20,9 +20,7 @@
   "paths": {
     "/whoami": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Get the current User",
         "description": "Sends all Data about the User currently logged in.",
         "operationId": "whoami",
@@ -48,9 +46,7 @@
     },
     "/login": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Login the User in",
         "description": "Will return an Authtoken which you will need to send in every request in the Cookie Header",
         "operationId": "login",
@@ -67,7 +63,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful login. Sends a Token in the Cookie Header."
+            "description": "Successful login. Sends a Token in the Cookie Header and if the email is verified. Redirect user to /emailverification when not connected!"
           },
           "400": {
             "description": "Wrong request structure"
@@ -86,9 +82,7 @@
     },
     "/register": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Register a new User",
         "description": "This will be the same for students and teachers",
         "operationId": "register",
@@ -177,11 +171,7 @@
           "type": {
             "type": "string",
             "example": "student",
-            "enum": [
-              "student",
-              "teacher",
-              "futureteacher"
-            ]
+            "enum": ["student", "teacher", "futureteacher"]
           },
           "avatar": {
             "type": "string"
@@ -247,10 +237,7 @@
           "type": {
             "type": "string",
             "example": "student",
-            "enum": [
-              "student",
-              "teacher"
-            ]
+            "enum": ["student", "teacher"]
           }
         },
         "xml": {

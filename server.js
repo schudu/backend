@@ -57,7 +57,7 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
         }),
         { maxAge: !!remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 }
       )
-      .send();
+      .send({ emailVerified: user.emailVerified });
   }
   return res.status(401).send();
 });
@@ -190,6 +190,5 @@ cron.schedule("* 0 * * *", function () {
 
 app.listen(3001, () => {
   console.log("Halihalo");
-  console.log(process.env.SCHUDU_DB);
   console.log("Schudu backend running on Port: 3001");
 });
