@@ -6,4 +6,4 @@ services:
       - "127.0.0.1:10003:3001"
     container_name: backend
     env_file:
-      - ../../home/ubuntu/backends/schudu/backend.env
+      - ./../backend.env
