@@ -53,9 +53,9 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
       .cookie(
         "token",
         jwt.sign({ id: user._id }, user.password, {
-          expiresIn: !!remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24,
+          expiresIn: !!remember ? null : 60 * 60 * 24,
         }),
-        { maxAge: !!remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 }
+        { maxAge: !!remember ? null : 60 * 60 * 24 }
       )
       .send({ emailVerified: user.emailVerified });
   }
@@ -177,6 +177,7 @@ async function checkJWT(token) {
 
     return user;
   } catch (err) {
+    console.log(err);
     return 500;
   }
 }
@@ -192,6 +193,5 @@ cron.schedule("* 0 * * *", function () {
 });
 
 app.listen(3001, () => {
-  console.log("Halihalo");
   console.log("Schudu backend running on Port: 3001");
 });
