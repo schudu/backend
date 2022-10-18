@@ -69,13 +69,16 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
 });
 
 app.post("/register", checkNotAuthenticated, async (req, res) => {
-  let error = new TypeCheck(req.body.firstname).isName("firstname");
-  error = new TypeCheck(req.body.lastname).isName("lastname") || error;
-  error = new TypeCheck(req.body.password).isPassword() || error;
-  error = new TypeCheck(req.body.email).isEmail() || error;
-  error = new TypeCheck(req.body.username).isUsername() || error;
+  let error = [];
+  errpr.push(new TypeCheck(req.body.firstname).isName("firstname"));
+  error.push(new TypeCheck(req.body.lastname).isName("lastname"));
+  error.push(new TypeCheck(req.body.password).isPassword());
+  error.push(new TypeCheck(req.body.email).isEmail());
+  error.push(new TypeCheck(req.body.username).isUsername());
 
-  if (error) return res.status(400).send(error);
+  error = error.filter((e) => e != null);
+
+  if (error.length) return res.status(400).send(error);
 
   const {
     username,
@@ -117,15 +120,46 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
   return res.status(500).send();
 });
 
-app.put("/resetpassword", async (req, res) => {
+app.get("/resetpassword/:email", checkNotAuthenticated, async (req, res) => {
+  const user = await User.findOne({ email: req.query.email });
+
+  if (!user) return res.send();
+
   const passwordReset = await ResetPasswd.create({
-    user: req.user._id,
+    user: user._id,
   });
 
   await sendEmail(
     req.user.email,
     "Reset your Password",
-    `Hi ${req.user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://linkhub.kessaft.tk/passwordreset/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick!\n\nThanks!\nYour Linkhub Expert`,
+    `Hi ${req.user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/passwordreset/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
+    null
+    // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
+    //   resetId: passwordReset._id,
+    //   username: user.username,
+    // })
+  );
+
+  return res.send();
+});
+
+app.put("/resetpassword", async (req, res) => {
+  const passwordReset = await ResetPasswd.findById(req.body.id);
+
+  if (!passwordReset) return res.status(404).send();
+
+  await bcrypt.hash(req.body.password, 10, async function (err, hash) {
+    await User.findByIdAndUpdate(passwordReset.user, {
+      password: hash,
+    });
+  });
+
+  await ResetPasswd.findByIdAndDelete(passwordReset._id);
+
+  await sendEmail(
+    req.user.email,
+    "Password successful reseted",
+    `Hi ${req.user.username},\n\nYour Password has successfully been reseted. 👍\n\nThanks!\nYour Linkhub Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,
