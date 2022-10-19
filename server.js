@@ -43,7 +43,7 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
   if (typeof account !== "string") return res.status(415).send();
 
   const user = await User.findOne({
-    $or: [{ email: account.toLowerCase() }, { account }],
+    $or: [{ email: account.toLowerCase() }, { username: account }],
   });
 
   if (!user) return res.status(401).send();
@@ -96,34 +96,39 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
   else if (await User.exists({ email: email.toLowerCase() }))
     return res.status(409).send({ where: "email", error: "used" });
 
-  await bcrypt.hash(password, 10, async function (err, hash) {
-    const user = await User.create({
-      firstname,
-      lastname,
-      username,
-      email: email.toLowerCase(),
-      password: hash,
-      type: type === "teacher" ? UserType.FUTURETEACHER : UserType.STUDENT,
-    });
+  try {
+    await bcrypt.hash(password, 10, async function (err, hash) {
+      const user = await User.create({
+        firstname,
+        lastname,
+        username,
+        email: email.toLowerCase(),
+        password: hash,
+        type: type === "teacher" ? UserType.FUTURETEACHER : UserType.STUDENT,
+      });
 
-    res
-      .cookie(
-        "token",
-        jwt.sign({ id: user._id }, user.password, {
-          expiresIn: 60 * 60 * 24,
-        }),
-        { maxAge: 60 * 60 * 24 }
-      )
-      .status(201)
-      .send();
-  });
-  return res.status(500).send();
+      res
+        .cookie(
+          "token",
+          jwt.sign({ id: user._id }, user.password, {
+            expiresIn: 60 * 60 * 24,
+          }),
+          { maxAge: 60 * 60 * 24 }
+        )
+        .status(201)
+        .send();
+    });
+  } catch {
+    return res.status(500).send();
+  }
 });
 
 app.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
-  if (!req.params.email) return res.status(400).send();
+  let error = new TypeCheck(req.query.email).isEmail();
 
-  const user = await User.findOne({ email: req.params.email });
+  if (error) return res.status(400).send(error);
+
+  const user = await User.findOne({ email: req.query.email });
 
   if (!user) return res.send();
 
@@ -131,10 +136,11 @@ app.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
     user: user._id,
   });
 
+  return res.send(passwordReset._id);
   await sendEmail(
     user.email,
     "Reset your Password",
-    `Hi ${user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/passwordreset/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
+    `Hi ${user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/resetpassword/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,
@@ -145,10 +151,24 @@ app.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
   return res.send();
 });
 
-app.put("/resetpassword", async (req, res) => {
-  const passwordReset = await ResetPasswd.findById(req.body.id);
+app.get("/resetpassword/:id", async (req, res) => {
+  const passwordReset = await ResetPasswd.findById(req.params.id);
 
-  if (!passwordReset) return res.status(404).send();
+  if (!passwordReset)
+    return res.status(400).send({ where: "id", error: "invalid" });
+
+  return res.send();
+});
+
+app.put("/resetpassword/:id", async (req, res) => {
+  let error = new TypeCheck(req.body.password).isPassword();
+
+  if (error) return res.status(400).send(error);
+
+  const passwordReset = await ResetPasswd.findById(req.params.id);
+
+  if (!passwordReset)
+    return res.status(400).send({ where: "id", error: "invalid" });
 
   await bcrypt.hash(req.body.password, 10, async function (err, hash) {
     await User.findByIdAndUpdate(passwordReset.user, {
@@ -158,10 +178,12 @@ app.put("/resetpassword", async (req, res) => {
 
   await ResetPasswd.findByIdAndDelete(passwordReset._id);
 
+  const user = await User.findById(passwordReset.user);
+
   await sendEmail(
-    req.user.email,
+    user.email,
     "Password successful reseted",
-    `Hi ${req.user.username},\n\nYour Password has successfully been reseted. 👍\n\nThanks!\nYour Linkhub Expert`,
+    `Hi ${user.username},\n\nYour Password has successfully been reseted. 👍\n\nMake soure to not forget it again 🤨\n\nThanks!\nYour Linkhub Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,

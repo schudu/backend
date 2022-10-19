@@ -160,6 +160,27 @@
             "description": "Server Internal Error"
           }
         }
+      }
+    },
+    "/passwordreset/:id": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Check if Password Reset id is Valid",
+        "description": "Check if the Password Reset token is still valid or not",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Id Invalid"
+          },
+          "401": {
+            "description": "User is Logged in but it shouldn't"
+          },
+          "500": {
+            "description": "Server Internal Error"
+          }
+        }
       },
       "put": {
         "tags": ["user"],
