@@ -134,6 +134,33 @@
       }
     },
     "/passwordreset": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Send Email Reset Link to Email",
+        "description": "When the User forgot their passwort, it should enter there Email-Address and it will be send an Email with a Reset Link if an Account with this Email exists.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The Email Address the User entered",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "User is Logged in but it shouldn't"
+          },
+          "500": {
+            "description": "Server Internal Error"
+          }
+        }
+      },
       "put": {
         "tags": ["user"],
         "summary": "Save Password from Password reset",
@@ -144,24 +171,6 @@
           },
           "400": {
             "description": "Wrong Password Format"
-          },
-          "401": {
-            "description": "User is Logged in but it shouldn't"
-          },
-          "500": {
-            "description": "Server Internal Error"
-          }
-        }
-      }
-    },
-    "/passwordreset/:email": {
-      "get": {
-        "tags": ["user"],
-        "summary": "Send Email Reset Link to Email",
-        "description": "When the User forgot their passwort, it should enter there Email-Address and it will be send an Email with a Reset Link if an Account with this Email exists.",
-        "responses": {
-          "200": {
-            "description": "Success"
           },
           "401": {
             "description": "User is Logged in but it shouldn't"

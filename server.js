@@ -120,8 +120,8 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
   return res.status(500).send();
 });
 
-app.get("/resetpassword/:email", checkNotAuthenticated, async (req, res) => {
-  const user = await User.findOne({ email: req.query.email });
+app.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
+  const user = await User.findOne({ email: req.params.email });
 
   if (!user) return res.send();
 
@@ -130,9 +130,9 @@ app.get("/resetpassword/:email", checkNotAuthenticated, async (req, res) => {
   });
 
   await sendEmail(
-    req.user.email,
+    user.email,
     "Reset your Password",
-    `Hi ${req.user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/passwordreset/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
+    `Hi ${user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/passwordreset/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,
