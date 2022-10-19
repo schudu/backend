@@ -70,7 +70,7 @@ app.post("/login", checkNotAuthenticated, async (req, res) => {
 
 app.post("/register", checkNotAuthenticated, async (req, res) => {
   let error = [];
-  errpr.push(new TypeCheck(req.body.firstname).isName("firstname"));
+  error.push(new TypeCheck(req.body.firstname).isName("firstname"));
   error.push(new TypeCheck(req.body.lastname).isName("lastname"));
   error.push(new TypeCheck(req.body.password).isPassword());
   error.push(new TypeCheck(req.body.email).isEmail());
@@ -121,6 +121,8 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
 });
 
 app.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
+  if (!req.params.email) return res.status(400).send();
+
   const user = await User.findOne({ email: req.params.email });
 
   if (!user) return res.send();
