@@ -8,7 +8,7 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const cron = require("node-cron");
 const jwt = require("jsonwebtoken");
-const Joi = require("joi");
+const cors = require("cors");
 
 const { Homework, User, ResetPasswd, UserType } = require("./models/shemas");
 const connection = require("./services/db");
@@ -24,6 +24,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: "https://new.schudu.com",
+  })
+);
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");

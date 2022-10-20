@@ -106,7 +106,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Register-Res-error"
+                  "$ref": "#/components/schemas/Input-error"
                 }
               }
             }
@@ -119,7 +119,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Register-Res-error"
+                  "$ref": "#/components/schemas/Input-error"
                 }
               }
             }
@@ -152,6 +152,16 @@
         "responses": {
           "200": {
             "description": "Success"
+          },
+          "400": {
+            "description": "Wrong Input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Input-error"
+                }
+              }
+            }
           },
           "401": {
             "description": "User is Logged in but it shouldn't"
@@ -313,7 +323,7 @@
           "name": "login"
         }
       },
-      "Register-Res-error": {
+      "Input-error": {
         "type": "object",
         "properties": {
           "where": {
