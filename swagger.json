@@ -44,7 +44,7 @@
         }
       }
     },
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": ["user"],
         "summary": "Login the User in",
@@ -80,7 +80,7 @@
         }
       }
     },
-    "/register": {
+    "/auth/register": {
       "post": {
         "tags": ["user"],
         "summary": "Register a new User",
@@ -133,7 +133,7 @@
         }
       }
     },
-    "/passwordreset": {
+    "/auth/passwordreset": {
       "get": {
         "tags": ["user"],
         "summary": "Send Email Reset Link to Email",
@@ -172,7 +172,7 @@
         }
       }
     },
-    "/passwordreset/:id": {
+    "/auth/passwordreset/:id": {
       "get": {
         "tags": ["user"],
         "summary": "Check if Password Reset id is Valid",
