@@ -6,6 +6,11 @@ const UserType = {
   STUDENT: "student",
 };
 
+const Languages = {
+  EN: "English",
+  DE: "Deutsch",
+};
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -33,6 +38,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: Object.values(UserType),
     default: "student",
+    required: true,
   },
   emailVerified: {
     type: Boolean,
@@ -41,6 +47,14 @@ const userSchema = new mongoose.Schema({
   avatar: {
     data: Buffer,
     contentType: String,
+  },
+  settings: {
+    language: {
+      type: String,
+      default: "EN",
+      enum: Object.values(Languages),
+      required: true,
+    },
   },
   createdAt: {
     type: Date,
@@ -53,4 +67,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = { User, UserType };
+module.exports = { User, UserType, Languages };

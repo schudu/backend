@@ -317,6 +317,11 @@
             "type": "string",
             "example": "student",
             "enum": ["student", "teacher"]
+          },
+          "language": {
+            "type": "string",
+            "example": "en",
+            "enum": ["en", "de"]
           }
         },
         "xml": {
