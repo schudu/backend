@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const { User, EmailVerify } = require("../models/shemas");
 
 const { checkAuthenticated, checkNotAuthenticated } = require("../server");
-const sendEmail = require("./services/emailer");
-const TypeCheck = require("./services/typeCheck");
+const sendEmail = require("../services/emailer");
+const TypeCheck = require("../services/typeCheck");
 
 const router = express.Router();
 
