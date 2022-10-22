@@ -7,7 +7,7 @@ const { checkAuthenticated, checkNotAuthenticated } = require("../server");
 
 const router = express.Router();
 
-router.post("/login", checkNotAuthenticated, async (req, res) => {
+router.post("/login", async (req, res) => {
   if (new TypeCheck(req.body.password).isPassword())
     return res.status(400).send();
 
@@ -41,7 +41,7 @@ router.post("/login", checkNotAuthenticated, async (req, res) => {
   return res.status(401).send();
 });
 
-router.post("/register", checkNotAuthenticated, async (req, res) => {
+router.post("/register", async (req, res) => {
   let error = [];
   error.push(new TypeCheck(req.body.firstname).isName("firstname"));
   error.push(new TypeCheck(req.body.lastname).isName("lastname"));
@@ -103,7 +103,7 @@ router.post("/register", checkNotAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
+router.get("/resetpassword", async (req, res) => {
   let error = new TypeCheck(req.query.email).isEmail();
 
   if (error) return res.status(400).send(error);
@@ -131,7 +131,7 @@ router.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.get("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
+router.get("/resetpassword/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(400).send({ where: "id", error: "invalid" });
 
@@ -143,7 +143,7 @@ router.get("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.put("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
+router.put("/resetpassword/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(400).send({ where: "id", error: "invalid" });
 
@@ -180,7 +180,7 @@ router.put("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.put("/sendEmailverify", checkAuthenticated, async (req, res) => {
+router.put("/sendEmailverify", async (req, res) => {
   const { user } = req.body;
 
   await EmailVerify.deleteMany({ user: user._id });
@@ -212,7 +212,7 @@ router.put("/sendEmailverify", checkAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.put("/emailverify/:code", checkAuthenticated, async (req, res) => {
+router.put("/emailverify/:code", async (req, res) => {
   if (!req.params.code.matches(/^[ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]{6}$/i))
     return res.status(415).send();
 

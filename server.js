@@ -37,6 +37,7 @@ app.use(
       process.env.NODE_ENV === "development" ? "*" : "https://new.schudu.com",
   })
 );
+app.use("/auth", authRoute);
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
@@ -100,7 +101,6 @@ async function checkJWT(token) {
 }
 
 app.use("/user", checkAuthenticated, userRoute);
-app.use("/auth", authRoute);
 
 app.use("*", (req, res) => {
   res.status(404).send();
