@@ -17,7 +17,7 @@ async function checkNotAuthenticated(req, res, next) {
 
   if (auth === 500) return res.status(500).send();
 
-  if (auth) return res.status(401).send();
+  if (auth) return res.status(403).send();
 
   return next();
 }

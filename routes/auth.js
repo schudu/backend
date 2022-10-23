@@ -187,8 +187,10 @@ router.put("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.put("/sendEmailverify", checkAuthenticated, async (req, res) => {
+router.get("/emailverification", checkAuthenticated, async (req, res) => {
   const { user } = req.body;
+
+  if (user.emailVerified) return res.status(403).send();
 
   await EmailVerify.deleteMany({ user: user._id });
 
@@ -219,16 +221,20 @@ router.put("/sendEmailverify", checkAuthenticated, async (req, res) => {
   return res.send();
 });
 
-router.put("/emailverify/:code", checkAuthenticated, async (req, res) => {
+router.put("/emailverification/:code", checkAuthenticated, async (req, res) => {
+  const { user } = req.body;
+
+  if (user.emailVerified) return res.status(403).send();
+
   if (!req.params.code.matches(/^[ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]{6}$/i))
-    return res.status(415).send();
+    return res.status(400).send();
 
   const emailVerify = await EmailVerify.findOneAndDelete({
     code: req.body.code.toUpperCase(),
     user: req.user._id,
   });
 
-  if (!emailVerify) return res.status(401).send("You need to Login");
+  if (!emailVerify) return res.status(400).send();
 
   await User.findById(req.user._id, { emailVerified: true });
 

@@ -163,7 +163,7 @@
               }
             }
           },
-          "401": {
+          "403": {
             "description": "User is Logged in but it shouldn't"
           },
           "500": {
@@ -172,7 +172,7 @@
         }
       }
     },
-    "/auth/passwordreset/:id": {
+    "/auth/passwordreset/{id}": {
       "get": {
         "tags": ["user"],
         "summary": "Check if Password Reset id is Valid",
@@ -184,7 +184,7 @@
           "400": {
             "description": "Id Invalid"
           },
-          "401": {
+          "403": {
             "description": "User is Logged in but it shouldn't"
           },
           "500": {
@@ -203,8 +203,53 @@
           "400": {
             "description": "Wrong Password Format"
           },
-          "401": {
+          "403": {
             "description": "User is Logged in but it shouldn't"
+          },
+          "500": {
+            "description": "Server Internal Error"
+          }
+        }
+      }
+    },
+    "/auth/emailverification": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Request a Email Verifcation link throw email.",
+        "description": "Sends an Email with a new Verification Code the the users Email-Address.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "403": {
+            "description": "Email is already Verified"
+          },
+          "500": {
+            "description": "Server Internal Error"
+          }
+        }
+      }
+    },
+    "/auth/emailverification/{code}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Checks if the code is valid.",
+        "description": "Checks if the Code is the same to the one send by email.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Incorrect Code"
+          },
+          "401": {
+            "description": "Not logged in"
+          },
+          "403": {
+            "description": "Email is already Verified"
           },
           "500": {
             "description": "Server Internal Error"
