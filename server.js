@@ -58,8 +58,65 @@ app.use("*", (req, res) => {
   res.status(404).send();
 });
 
-cron.schedule("* 0 * * *", function () {
+cron.schedule("* 0 * * *", () => {
   deleteold();
+});
+
+cron.schedule("* 8 * * *", () => {
+  var endDate = new Date("11/03/2022");
+
+  const images = [
+    "https://cdn.pixabay.com/photo/2017/03/06/11/00/self-confidence-2121159_1280.jpg",
+    "https://cdn.pixabay.com/photo/2016/06/03/08/18/just-do-it-1432951_1280.png",
+    "https://cdn.pixabay.com/photo/2017/01/05/16/58/goal-setting-1955806_1280.png",
+    "https://cdn.pixabay.com/photo/2016/06/03/08/18/do-it-now-1432945_1280.png",
+    "https://cdn.pixabay.com/photo/2016/06/03/08/18/lets-do-it-1432952_1280.png",
+    "https://cdn.pixabay.com/photo/2016/11/21/15/13/work-harder-1845901_1280.jpg",
+    "https://cdn.pixabay.com/photo/2019/04/29/14/32/make-the-day-great-4166221_1280.jpg",
+    "https://cdn.pixabay.com/photo/2018/05/12/11/37/team-3393037_1280.jpg",
+    "https://cdn.pixabay.com/photo/2017/01/28/12/20/do-not-give-up-2015253_1280.jpg",
+    "https://cdn.pixabay.com/photo/2018/11/27/21/44/take-it-easy-3842473_1280.jpg",
+    "https://cdn.pixabay.com/photo/2018/05/15/17/49/dont-give-up-3403779_1280.jpg",
+  ];
+
+  fetch(
+    "https://discord.com/api/webhooks/1034110371918782565/PTg1i1_3zmV7guVtMsdGPlFI909Xaeotv1kbaejGtM3SVzjvcsqJ71XVhPWx5zlWI8QB",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: null,
+        embeds: [
+          {
+            title: "Keep working on me!",
+            description:
+              "Du willst diese App und Webapp nach den Herbstferien nutzen können. Also musst du etwas Gas geben!!!",
+            color: 16711680,
+            fields: [
+              {
+                name: "Time Left:",
+                value:
+                  Math.round((endDate - new Date()) / (1000 * 60 * 60 * 24)) +
+                  " Days",
+              },
+            ],
+            author: {
+              name: "Schudu",
+            },
+            footer: {
+              text: "Please Do It!!!",
+            },
+            image: {
+              url: images[Math.floor(Math.random() * images.length)],
+            },
+          },
+        ],
+        attachments: [],
+      }),
+    }
+  );
 });
 
 app.listen(3001, () => {

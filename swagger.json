@@ -177,6 +177,17 @@
         "tags": ["user"],
         "summary": "Check if Password Reset id is Valid",
         "description": "Check if the Password Reset token is still valid or not",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The Reset Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -196,6 +207,17 @@
         "tags": ["user"],
         "summary": "Save Password from Password reset",
         "description": "When the User forgot their passwort, it should enter there Email-Address and it will be send an Email with a Reset Link.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The Reset Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -234,10 +256,21 @@
       }
     },
     "/auth/emailverification/{code}": {
-      "get": {
+      "put": {
         "tags": ["user"],
         "summary": "Checks if the code is valid.",
         "description": "Checks if the Code is the same to the one send by email.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "The Verification Code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
