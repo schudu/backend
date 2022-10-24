@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const cron = require("node-cron");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const axios = require("axios");
 
 const {
   Homework,
@@ -62,7 +63,7 @@ cron.schedule("* 0 * * *", () => {
   deleteold();
 });
 
-cron.schedule("* 8 * * *", () => {
+cron.schedule("* 6 * * *", () => {
   var endDate = new Date("11/03/2022");
 
   const images = [
@@ -79,42 +80,36 @@ cron.schedule("* 8 * * *", () => {
     "https://cdn.pixabay.com/photo/2018/05/15/17/49/dont-give-up-3403779_1280.jpg",
   ];
 
-  fetch(
+  axios.post(
     "https://discord.com/api/webhooks/1034110371918782565/PTg1i1_3zmV7guVtMsdGPlFI909Xaeotv1kbaejGtM3SVzjvcsqJ71XVhPWx5zlWI8QB",
     {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: null,
-        embeds: [
-          {
-            title: "Keep working on me!",
-            description:
-              "Du willst diese App und Webapp nach den Herbstferien nutzen können. Also musst du etwas Gas geben!!!",
-            color: 16711680,
-            fields: [
-              {
-                name: "Time Left:",
-                value:
-                  Math.round((endDate - new Date()) / (1000 * 60 * 60 * 24)) +
-                  " Days",
-              },
-            ],
-            author: {
-              name: "Schudu",
+      content: null,
+      embeds: [
+        {
+          title: "Keep working on me!",
+          description:
+            "Du willst diese App und Webapp nach den Herbstferien nutzen können. Also musst du etwas Gas geben!!!",
+          color: 16711680,
+          fields: [
+            {
+              name: "Time Left:",
+              value:
+                Math.round((endDate - new Date()) / (1000 * 60 * 60 * 24)) +
+                " Days",
             },
-            footer: {
-              text: "Please Do It!!!",
-            },
-            image: {
-              url: images[Math.floor(Math.random() * images.length)],
-            },
+          ],
+          author: {
+            name: "Schudu",
           },
-        ],
-        attachments: [],
-      }),
+          footer: {
+            text: "Please Do It!!!",
+          },
+          image: {
+            url: images[Math.floor(Math.random() * images.length)],
+          },
+        },
+      ],
+      attachments: [],
     }
   );
 });
