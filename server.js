@@ -63,7 +63,7 @@ cron.schedule("* 0 * * *", () => {
   deleteold();
 });
 
-cron.schedule("* 6 * * *", () => {
+cron.schedule("0 6 * * *", () => {
   var endDate = new Date("11/03/2022");
 
   const images = [
@@ -80,38 +80,35 @@ cron.schedule("* 6 * * *", () => {
     "https://cdn.pixabay.com/photo/2018/05/15/17/49/dont-give-up-3403779_1280.jpg",
   ];
 
-  axios.post(
-    "https://discord.com/api/webhooks/1034110371918782565/PTg1i1_3zmV7guVtMsdGPlFI909Xaeotv1kbaejGtM3SVzjvcsqJ71XVhPWx5zlWI8QB",
-    {
-      content: null,
-      embeds: [
-        {
-          title: "Keep working on me!",
-          description:
-            "Du willst diese App und Webapp nach den Herbstferien nutzen können. Also musst du etwas Gas geben!!!",
-          color: 16711680,
-          fields: [
-            {
-              name: "Time Left:",
-              value:
-                Math.round((endDate - new Date()) / (1000 * 60 * 60 * 24)) +
-                " Days",
-            },
-          ],
-          author: {
-            name: "Schudu",
+  axios.post(process.env.SCHUDU_WEBHOOK, {
+    content: null,
+    embeds: [
+      {
+        title: "Keep working on me!",
+        description:
+          "Du willst diese App und Webapp nach den Herbstferien nutzen können. Also musst du etwas Gas geben!!!",
+        color: 16711680,
+        fields: [
+          {
+            name: "Time Left:",
+            value:
+              Math.round((endDate - new Date()) / (1000 * 60 * 60 * 24)) +
+              " Days",
           },
-          footer: {
-            text: "Please Do It!!!",
-          },
-          image: {
-            url: images[Math.floor(Math.random() * images.length)],
-          },
+        ],
+        author: {
+          name: "Schudu",
         },
-      ],
-      attachments: [],
-    }
-  );
+        footer: {
+          text: "Please Do It!!!",
+        },
+        image: {
+          url: images[Math.floor(Math.random() * images.length)],
+        },
+      },
+    ],
+    attachments: [],
+  });
 });
 
 app.listen(3001, () => {
