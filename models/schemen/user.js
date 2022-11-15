@@ -7,8 +7,8 @@ const UserType = {
 };
 
 const Languages = {
-  EN: "English",
-  DE: "Deutsch",
+  EN: "en",
+  DE: "de",
 };
 
 const userSchema = new mongoose.Schema({
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
   settings: {
     language: {
       type: String,
-      default: "EN",
+      default: "en",
       enum: Object.values(Languages),
       required: true,
     },

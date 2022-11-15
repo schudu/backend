@@ -39,7 +39,10 @@ app.use(cookieParser());
 app.use(
   cors({
     origin:
-      process.env.NODE_ENV === "development" ? "*" : "https://new.schudu.com",
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://new.schudu.com",
+    credentials: true,
   })
 );
 app.use("/auth", authRoute);
@@ -50,6 +53,7 @@ const swaggerDocument = require("./swagger.json");
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/whoami", checkAuthenticated, async (req, res) => {
+  req.user.password = null;
   res.send(req.user);
 });
 

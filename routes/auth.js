@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const { User, EmailVerify } = require("../models/shemas");
+const {
+  User,
+  EmailVerify,
+  UserType,
+  Languages,
+  ResetPasswd,
+} = require("../models/shemas");
 
 const {
   checkAuthenticated,
@@ -14,8 +20,35 @@ const TypeCheck = require("../services/typeCheck");
 
 const router = express.Router();
 
+router.get("/available/username", async (req, res) => {
+  if (new TypeCheck(req.query.username).isUsername())
+    return res.status(400).send();
+
+  if (
+    await User.exists({
+      username: { $regex: `^${req.query.username.trim()}$`, $options: "i" },
+    })
+  )
+    return res.status(409).send();
+
+  res.send();
+});
+
+router.get("/available/email", async (req, res) => {
+  if (new TypeCheck(req.query.email).isEmail()) return res.status(400).send();
+
+  if (await User.exists({ email: req.query.email.toLowerCase().trim() }))
+    return res.status(409).send();
+
+  res.send();
+});
+
 router.post("/login", checkNotAuthenticated, async (req, res) => {
-  if (new TypeCheck(req.body.password).isPassword())
+  if (
+    (new TypeCheck(req.body.account).isEmail() != null ||
+      new TypeCheck(req.body.account).isUsername() != null) &&
+    new TypeCheck(req.body.password).isPassword() != null
+  )
     return res.status(400).send();
 
   const { account, password, remember } = req.body;
@@ -23,7 +56,10 @@ router.post("/login", checkNotAuthenticated, async (req, res) => {
   if (typeof account !== "string") return res.status(415).send();
 
   const user = await User.findOne({
-    $or: [{ email: account.toLowerCase() }, { username: account }],
+    $or: [
+      { email: account.toLowerCase().trim() },
+      { username: { $regex: `^${account.trim()}$`, $options: "i" } },
+    ],
   });
 
   if (!user) return res.status(401).send();
@@ -41,7 +77,7 @@ router.post("/login", checkNotAuthenticated, async (req, res) => {
                 expiresIn: 60 * 60 * 24,
               }
         ),
-        !!remember ? {} : { maxAge: 60 * 60 * 24 }
+        !!remember ? {} : { maxAge: 100 * 60 * 60 * 24 }
       )
       .send({ emailVerified: user.emailVerified });
   }
@@ -66,16 +102,20 @@ router.post("/register", checkNotAuthenticated, async (req, res) => {
     password,
     firstname,
     lastname,
-    type = "student",
-    language = "EN",
+    type = UserType.STUDENT,
+    language = Languages.EN,
   } = req.body;
 
   if (typeof type !== "string" || typeof language != "string")
     return res.status(415).send();
 
-  if (await User.exists({ username: username }))
+  if (
+    await User.exists({
+      username: { $regex: `^${username.trim()}$`, $options: "i" },
+    })
+  )
     return res.status(409).send({ where: "username", error: "used" });
-  else if (await User.exists({ email: email.toLowerCase() }))
+  else if (await User.exists({ email: email.toLowerCase().trim() }))
     return res.status(409).send({ where: "email", error: "used" });
 
   try {
@@ -88,9 +128,9 @@ router.post("/register", checkNotAuthenticated, async (req, res) => {
         password: hash,
         type: type === "teacher" ? UserType.FUTURETEACHER : UserType.STUDENT,
         settings: {
-          language: Object.keys(Languages).includes(language.toUpperCase())
-            ? language.toUpperCase()
-            : "EN",
+          language: Object.keys(Languages).includes(language.toLowerCase())
+            ? language.toLowerCase()
+            : Languages.EN,
         },
       });
 
@@ -100,7 +140,7 @@ router.post("/register", checkNotAuthenticated, async (req, res) => {
           jwt.sign({ id: user._id }, user.password, {
             expiresIn: 60 * 60 * 24,
           }),
-          { maxAge: 60 * 60 * 24 }
+          { maxAge: 1000 * 60 * 60 * 24 }
         )
         .status(201)
         .send();
@@ -115,7 +155,9 @@ router.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
 
   if (error) return res.status(400).send(error);
 
-  const user = await User.findOne({ email: req.query.email });
+  const user = await User.findOne({
+    email: req.query.email.toLowerCase().trim(),
+  });
 
   if (!user) return res.send();
 
@@ -123,11 +165,10 @@ router.get("/resetpassword", checkNotAuthenticated, async (req, res) => {
     user: user._id,
   });
 
-  return res.send(passwordReset._id);
   await sendEmail(
     user.email,
     "Reset your Password",
-    `Hi ${user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/resetpassword/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore this!\n\nThanks!\nYour Schudu Expert`,
+    `Hi ${user.username},\n\nMaybe you should remember the next Password a little better 😜.\n\nClick the Button below to set a new Password:\nhttps://new.schudu.com/passwortd-forgotten/${passwordReset._id}\nThis Link will expire in 10 minutes, so be quick! \n\nIf this has nothing to do with you, please just ignore it!\n\nThanks!\nYour Schudu Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,
@@ -176,7 +217,7 @@ router.put("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
   await sendEmail(
     user.email,
     "Password successful reseted",
-    `Hi ${user.username},\n\nYour Password has successfully been reseted. 👍\n\nMake soure to not forget it again 🤨\n\nThanks!\nYour Linkhub Expert`,
+    `Hi ${user.username},\n\nYour Password has successfully been reseted. 👍\n\nMake sure to not forget it again 🤨\n\nThanks!\nYour Schudu Expert`,
     null
     // await ejs.renderFile("./app/components/emails/changePassword.ejs", {
     //   resetId: passwordReset._id,
@@ -188,7 +229,7 @@ router.put("/resetpassword/:id", checkNotAuthenticated, async (req, res) => {
 });
 
 router.get("/emailverification", checkAuthenticated, async (req, res) => {
-  const { user } = req.body;
+  const user = req.user;
 
   if (user.emailVerified) return res.status(403).send();
 
@@ -210,7 +251,7 @@ router.get("/emailverification", checkAuthenticated, async (req, res) => {
   await sendEmail(
     user.email,
     "Verify your Email",
-    `Hi ${user.username},\n\nThanks for Signing up and verifying your Email!\n\nThis is your verification code: ${token}\n\nThis code will onlx be valid for the next 5 minutes. If the code does not work, you can request a new one here:\nhttps://linkhub.kessaft.tk/login\n\nThanks!\nYour Linkhub Expert`,
+    `Hi ${user.username},\n\nThanks for Signing up and verifying your Email!\n\nThis is your verification code: ${token}\n\nThis code will onlx be valid for the next 5 minutes. If the code does not work, you can request a new one here:\nhttps://new.schudu.com/emailverification\n\nThanks!\nYour Linkhub Expert`,
     null
     // await ejs.renderFile("./app/components/emails/emailVerify.ejs", {
     //   code: token.split(""),
@@ -222,21 +263,21 @@ router.get("/emailverification", checkAuthenticated, async (req, res) => {
 });
 
 router.put("/emailverification/:code", checkAuthenticated, async (req, res) => {
-  const { user } = req.body;
+  const user = req.user;
 
   if (user.emailVerified) return res.status(403).send();
 
-  if (!req.params.code.matches(/^[ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]{6}$/i))
+  if (!/^[ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]{6}$/i.test(req.params.code))
     return res.status(400).send();
 
   const emailVerify = await EmailVerify.findOneAndDelete({
-    code: req.body.code.toUpperCase(),
+    code: req.params.code.toUpperCase(),
     user: req.user._id,
   });
 
   if (!emailVerify) return res.status(400).send();
 
-  await User.findById(req.user._id, { emailVerified: true });
+  await User.findByIdAndUpdate(req.user._id, { emailVerified: true });
 
   return res.send();
 });

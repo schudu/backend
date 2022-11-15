@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const { User } = require("../models/shemas");
 
 async function checkAuthenticated(req, res, next) {
   const auth = await checkJWT(req.cookies.token);
@@ -37,14 +38,6 @@ async function checkJWT(token) {
     const authData = jwt.verify(token.toString(), user.password);
 
     if (!authData) return false;
-
-    /* if (user.emailVerified) {
-      user.emailVerified = (await EmailVerify.exists({
-        user: mongoose.Types.ObjectId(decoded.id),
-      }))
-        ? false
-        : true;
-    } */
 
     return user;
   } catch (err) {

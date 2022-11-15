@@ -63,13 +63,23 @@
         },
         "responses": {
           "200": {
-            "description": "Successful login. Sends a Token in the Cookie Header and if the email is verified. Redirect user to /emailverification when not connected!"
+            "description": "Successful login. Sends a Token in the Cookie Header and if the email is verified. Redirect user to /emailverification when not connected!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login-Res"
+                }
+              }
+            }
           },
           "400": {
             "description": "Wrong request structure"
           },
           "401": {
             "description": "Unautherized, Login not successful"
+          },
+          "403": {
+            "description": "Already logged in"
           },
           "415": {
             "description": "Wrong Variable Type"
@@ -114,6 +124,9 @@
           "401": {
             "description": "Unautherized, Register not successful"
           },
+          "403": {
+            "description": "Already logged in"
+          },
           "409": {
             "description": "Username or Email already used",
             "content": {
@@ -129,6 +142,70 @@
           },
           "500": {
             "description": "Internal Server Error (Something went wrong)"
+          }
+        }
+      }
+    },
+    "/auth/available/username": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Check if Username is available",
+        "description": "When changing the Username or while registering, you can quickly check the availability of the Username.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The Entered Username",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success / Available"
+          },
+          "400": {
+            "description": "Wrong Input / This is no Username"
+          },
+          "409": {
+            "description": "Not available"
+          },
+          "500": {
+            "description": "Server Internal Error"
+          }
+        }
+      }
+    },
+    "/auth/available/email": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Check if Email is available",
+        "description": "When changing the Email or while registering, you can quickly check the availability of the Email.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "The Entered Email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success / Available"
+          },
+          "400": {
+            "description": "Wrong Input / This is no Email"
+          },
+          "409": {
+            "description": "Not available"
+          },
+          "500": {
+            "description": "Server Internal Error"
           }
         }
       }
@@ -416,6 +493,15 @@
           "error": {
             "type": "string",
             "example": "used"
+          }
+        }
+      },
+      "Login-Res": {
+        "type": "object",
+        "properties": {
+          "emailVerified": {
+            "type": "boolean",
+            "example": "true"
           }
         }
       }
