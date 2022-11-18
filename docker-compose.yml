@@ -3,7 +3,7 @@ services:
   backend:
     build: .
     ports:
-      - "127.0.0.1:10003:3001"
+      - "127.0.0.1:10001:3001"
     container_name: backend
     env_file:
       - ./../backend.env

@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Notify Update Service
-        run: curl -X GET "https://kessaft.tk/ci/deploy?name=schudu&path=schudu/backend&secret=${{secrets.AUTH_TOKEN}}"
+        run: curl -X GET "https://deploy.kessaft.tk/deploy?name=schudu&path=schudu/backend&secret=${{secrets.AUTH_TOKEN}}"

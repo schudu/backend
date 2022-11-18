@@ -48,12 +48,29 @@ const userSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  birthday: {
+    type: Date,
+  },
   settings: {
     language: {
       type: String,
       default: "en",
       enum: Object.values(Languages),
       required: true,
+    },
+    notifications: {
+      email: {
+        homework: {
+          correction: false,
+          forgotten: false,
+        },
+      },
+      mobile: {
+        homework: {
+          correction: false,
+          forgotten: false,
+        },
+      },
     },
   },
   createdAt: {
