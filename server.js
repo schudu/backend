@@ -28,6 +28,7 @@ const {
 
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
+const settingsRoute = require("./routes/settings");
 
 const app = express();
 
@@ -58,15 +59,12 @@ app.get("/whoami", checkAuthenticated, async (req, res) => {
 });
 
 app.use("/user", checkAuthenticated, userRoute);
+app.use("/settings", checkAuthenticated, settingsRoute);
 
 app.use("*", (req, res) => {
   res.status(404).send();
 });
-
-cron.schedule("* 0 * * *", () => {
-  deleteold();
-});
-
+/* 
 cron.schedule("0 6 * * *", () => {
   var endDate = new Date("11/03/2022");
 
@@ -113,7 +111,7 @@ cron.schedule("0 6 * * *", () => {
     ],
     attachments: [],
   });
-});
+}); */
 
 app.listen(3001, () => {
   console.log("Schudu backend running on Port: 3001");

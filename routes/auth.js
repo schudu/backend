@@ -77,11 +77,18 @@ router.post("/login", checkNotAuthenticated, async (req, res) => {
                 expiresIn: 60 * 60 * 24,
               }
         ),
-        !!remember ? {} : { maxAge: 100 * 60 * 60 * 24 }
+        !!remember
+          ? { httpOnly: true }
+          : { maxAge: 100 * 60 * 60 * 24, httpOnly: true }
       )
       .send({ emailVerified: user.emailVerified });
   }
   return res.status(401).send();
+});
+
+router.get("/logout", (req, res) => {
+  res.clearCookie("token", { path: "/" });
+  res.send();
 });
 
 router.post("/register", checkNotAuthenticated, async (req, res) => {

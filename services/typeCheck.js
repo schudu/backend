@@ -51,10 +51,9 @@ const TypeCheck = class {
   }
 
   isName(where = "name") {
-    if (!this.value) return { where: where, error: "missing" };
+    if (!this.value) return { where, error: "missing" };
 
-    if (typeof this.value !== "string")
-      return { where: "where", error: "type" };
+    if (typeof this.value !== "string") return { where, error: "type" };
 
     if (this.value.length < 2 || this.value.length > 50)
       return { where, error: "length" };

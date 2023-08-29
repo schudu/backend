@@ -20,6 +20,11 @@ const classSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  school: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "School",
+    required: true,
+  },
   users: [
     {
       user: {
